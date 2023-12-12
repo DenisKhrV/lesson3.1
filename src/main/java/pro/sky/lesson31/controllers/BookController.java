@@ -1,9 +1,12 @@
 package pro.sky.lesson31.controllers;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.lesson31.model.Book;
 import pro.sky.lesson31.services.BookService;
+
+import java.util.Collection;
 
 @RestController
 @RequestMapping("books")
@@ -23,6 +26,11 @@ public class BookController {
         return ResponseEntity.ok(book);
     }
 
+    @GetMapping
+    public ResponseEntity<Collection<Book>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
+
     @PostMapping // POST http://localhost:8080/books
     public Book createBook(@RequestBody Book book) {
         return bookService.createBook(book);
@@ -32,17 +40,14 @@ public class BookController {
     public ResponseEntity<Book> editBook(@RequestBody Book book) {
         Book foundBook = bookService.editBook(book);
         if (foundBook == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponseEntity.ok(foundBook);
     }
 
     @DeleteMapping("{id}")// DELETE http://localhost:8080/books/2
     public ResponseEntity<Book> deleteBook(@PathVariable Long id) {
-        Book deleteBook = bookService.deleteBook(id);
-        if (deleteBook == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(deleteBook);
+        bookService.deleteBook(id);
+        return ResponseEntity.ok().build();
     }
 }

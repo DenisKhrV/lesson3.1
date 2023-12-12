@@ -2,34 +2,38 @@ package pro.sky.lesson31.services;
 
 import org.springframework.stereotype.Service;
 import pro.sky.lesson31.model.Book;
+import pro.sky.lesson31.repositories.BookRepository;
 
-import java.util.HashMap;
+import java.util.Collection;
 
 @Service
 public class BookService {
 
-    private final HashMap<Long, Book> books = new HashMap<>();
-    private long lastId = 0;
+    private final BookRepository bookRepository;
+
+    public BookService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
 
     public Book createBook(Book book) {
-        book.setId(++lastId);
-        books.put(lastId, book);
-        return book;
+        return bookRepository.save(book);
     }
 
     public Book findBook (long id) {
-        return books.get(id);
+
+        return bookRepository.findById(id).get();
     }
 
     public Book editBook(Book book) {
-        if (books.containsKey(book.getId())) {
-            books.put(book.getId(), book);
-            return book;
-        }
-        return null;
+        return bookRepository.save(book);
     }
 
-    public Book deleteBook(long id) {
-       return books.remove(id);
+    public void deleteBook(long id) {
+
+        bookRepository.deleteById(id);
+    }
+
+    public Collection<Book> getAllBooks() {
+        return bookRepository.findAll();
     }
 }
